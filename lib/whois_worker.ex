@@ -7,8 +7,8 @@ defmodule WhoisWorker do
     GenServer.start_link(__MODULE__, %{whois: ""})
   end
 
-  def whois(pid, domain) do
-    GenServer.call(pid, {:whois, domain})
+  def whois(pid, domain, server) do
+    GenServer.call(pid, {:whois, domain, server})
   end
 
   def stop(pid) do
@@ -17,10 +17,9 @@ defmodule WhoisWorker do
 
   ## GenServer callbacks
 
-  def handle_call({:whois, domain}, {pid, _ref}, state) do
-    [tld | _] = :lists.reverse(String.split(domain, "."))
-    {:ok, ip} = server(tld)
-    Logger.info("Got #{inspect ip} for #{tld}")
+  def handle_call({:whois, domain, server}, {pid, _ref}, state) do
+    {:ok, ip} = server(server)
+    Logger.info("Got #{inspect ip} for #{server}")
     {:ok, socket} = :gen_tcp.connect(ip, 43, [:binary, packet: :line])
     :gen_tcp.send(socket, "#{domain}\n")
     state1 = Map.put(state, :client, pid)
@@ -61,7 +60,7 @@ defmodule WhoisWorker do
 
   # internal stuff
 
-  defp server(tld) do
-    :inet.getaddr(:erlang.binary_to_list("#{tld}.whois-servers.net"), :inet)
+  defp server(server) do
+    :inet.getaddr(:erlang.binary_to_list(server), :inet)
   end
 end
