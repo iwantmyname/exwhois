@@ -52,7 +52,7 @@ defmodule Whois do
   end
 
 
-  def parse(whois, server) do
+  def parse(_whois, server) do
     Logger.error("Whois server: #{server} not yet supported")
   end
 
