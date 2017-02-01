@@ -1,9 +1,9 @@
-defmodule Whois do
-
+defmodule Exwhois.Whois do
+  alias Exwhois.WhoisWorker
   require Logger
 
   def lookup(domain) do
-    Whois.get(domain)
+    get(domain)
   end
 
   def get(domain) do
