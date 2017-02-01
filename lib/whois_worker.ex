@@ -1,4 +1,4 @@
-defmodule WhoisWorker do
+defmodule Exwhois.WhoisWorker do
   require Logger
   use GenServer
 
