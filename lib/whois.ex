@@ -1,7 +1,11 @@
 defmodule Whois do
 
   require Logger
-  
+
+  def lookup(domain) do
+    Whois.get(domain)
+  end
+
   def get(domain) do
     {:ok, pid} = WhoisWorker.start_link()
     [tld | _] = :lists.reverse(String.split(domain, "."))
@@ -19,9 +23,8 @@ defmodule Whois do
     WhoisWorker.stop(pid)
     whois
     |> parse(server)
-
   end
-
+  
   def parse(whois, "whois.afilias.net") do
 
     regex_list = [~r/Domain Name:(?<domain>.+)\n/,
@@ -52,8 +55,9 @@ defmodule Whois do
   end
 
 
-  def parse(_whois, server) do
+  def parse(whois, server) do
     Logger.error("Whois server: #{server} not yet supported")
+    whois
   end
 
   def parse_line(regex, whois) do
